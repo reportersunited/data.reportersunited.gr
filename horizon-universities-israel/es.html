@@ -3,6 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://data.reportersunited.gr/horizon-universities-israel/es">
+<link rel="alternate" hreflang="en" href="https://data.reportersunited.gr/horizon-universities-israel/en">
+<link rel="alternate" hreflang="el" href="https://data.reportersunited.gr/horizon-universities-israel/el">
+<link rel="alternate" hreflang="es" href="https://data.reportersunited.gr/horizon-universities-israel/es">
+<link rel="alternate" hreflang="it" href="https://data.reportersunited.gr/horizon-universities-israel/it">
+<link rel="alternate" hreflang="fr" href="https://data.reportersunited.gr/horizon-universities-israel/fr">
+<link rel="alternate" hreflang="nl" href="https://data.reportersunited.gr/horizon-universities-israel/nl">
+<link rel="alternate" hreflang="x-default" href="https://data.reportersunited.gr/horizon-universities-israel/en">
+<meta name="description" content="Registro de colaboraciones Horizon">
 <title>Registro de colaboraciones Horizon</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <style>
@@ -121,6 +130,8 @@ aside.filters>.scroll-box{flex:1 1 0;min-height:140px;overflow-y:auto;padding-ri
 /* canvas */
 #clusters{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--paper)}
 #cstage{position:relative;flex:1;min-height:0;overflow:hidden}
+.cluster-note{flex-shrink:0;padding:7px 18px;border-bottom:1px solid var(--rule);
+  background:var(--panel);font-size:12px;color:var(--ink70)}
 .statrow{display:flex;gap:1px;background:var(--rule);border-bottom:1px solid var(--rule);flex-shrink:0}
 .stat{flex:1;background:var(--panel);padding:11px 18px;min-width:0}
 .stat .v{font-family:var(--mono);font-size:23px;line-height:1.05;color:var(--ink);letter-spacing:-.01em}
@@ -217,6 +228,7 @@ tbody tr:hover{background:var(--paper)}
   .tbar{padding:8px 12px;gap:8px}
   .tscroll table{min-width:760px}
   th,td{padding:7px 10px}
+  .cluster-note{padding:6px 12px;font-size:11px}
   .site-footer{padding:6px 12px;font-size:10px}
   .canvas-controls{left:10px;bottom:10px}
 }
@@ -259,6 +271,7 @@ tbody tr:hover{background:var(--paper)}
     <main class="stage">
       <div id="clusters">
         <div class="statrow" id="stats"></div>
+        <div class="cluster-note" data-i18n="clHint">Click a bubble to see its connections</div>
         <div id="cstage">
         <canvas id="ccanvas"></canvas>
         <div id="ctooltip" class="hidden"></div>
@@ -301,107 +314,108 @@ const LOCALES=["en-GB","el-GR","es-ES","it-IT","fr-FR","nl-NL"];
 let LANG=2;   // this build opens in Español
 
 const STR={
-"title":["Horizon collaboration register","Μητρώο συνεργασιών Horizon","Registro de colaboraciones Horizon","Registro delle collaborazioni Horizon","Registre des collaborations Horizon",""],
-"tabClusters":["Clusters","Ομάδες","Grupos","Gruppi","Groupes",""],
-"tabTable":["Table","Πίνακας","Tabla","Tabella","Tableau",""],
-"filters":["Filters","Φίλτρα","Filtros","Filtri","Filtres",""],
-"close":["Close","Κλείσιμο","Cerrar","Chiudi","Fermer",""],
-"searchPh":["Search for your university","Αναζητήστε το πανεπιστήμιό σας","Busque su universidad","Cerca la tua università","Recherchez votre université",""],
-"searchHint":["Start typing the name of a university to see every Israeli entity it shares a Horizon project with. Entity and project names work too.","Αρχίστε να πληκτρολογείτε το όνομα ενός πανεπιστημίου για να δείτε κάθε ισραηλινό φορέα με τον οποίο μοιράζεται έργο Horizon. Λειτουργούν και ονόματα φορέων ή έργων.","Empiece a escribir el nombre de una universidad para ver todas las entidades israelíes con las que comparte un proyecto Horizon. También funcionan nombres de entidades y proyectos.","Inizia a digitare il nome di un'università per vedere ogni entità israeliana con cui condivide un progetto Horizon. Funzionano anche i nomi di entità e progetti.","Commencez à saisir le nom d'une université pour voir chaque entité israélienne avec laquelle elle partage un projet Horizon. Les noms d'entités et de projets fonctionnent aussi.",""],
-"grpUni":["Universities","Πανεπιστήμια","Universidades","Università","Universités",""],
-"grpEnt":["Israeli entities","Ισραηλινοί φορείς","Entidades israelíes","Entità israeliane","Entités israéliennes",""],
-"grpPro":["Horizon projects","Έργα Horizon","Proyectos Horizon","Progetti Horizon","Projets Horizon",""],
-"noMatch":["No university, entity or project matches “{q}”. Try a shorter fragment of the name.","Κανένα πανεπιστήμιο, φορέας ή έργο δεν ταιριάζει με «{q}». Δοκιμάστε ένα συντομότερο τμήμα του ονόματος.","Ninguna universidad, entidad o proyecto coincide con «{q}». Pruebe con un fragmento más corto.","Nessuna università, entità o progetto corrisponde a «{q}». Prova con un frammento più breve.","Aucune université, entité ou projet ne correspond à « {q} ». Essayez un fragment plus court.",""],
-"statUni":["European institutions collaborating","Ευρωπαϊκά ιδρύματα σε συνεργασία","Instituciones europeas que colaboran","Istituzioni europee che collaborano","Établissements européens en collaboration",""],
-"statUniSub":["of {n} across EU27 + Norway","από {n} σε ΕΕ27 + Νορβηγία","de {n} en la UE27 + Noruega","su {n} in UE27 + Norvegia","sur {n} dans l'UE27 + Norvège",""],
-"statDef":["Defence-linked Israeli entities","Ισραηλινοί φορείς με δεσμούς άμυνας","Entidades israelíes vinculadas a defensa","Entità israeliane legate alla difesa","Entités israéliennes liées à la défense",""],
-"statDefSub":["{a} of {b} connections run to one","{a} από {b} συνδέσεις οδηγούν σε έναν","{a} de {b} conexiones llevan a una","{a} su {b} collegamenti portano a una","{a} des {b} connexions mènent à l'une d'elles",""],
-"statFund":["EU funding to European institutions","Χρηματοδότηση ΕΕ προς ευρωπαϊκά ιδρύματα","Financiación de la UE a instituciones europeas","Finanziamenti UE alle istituzioni europee","Financement UE aux établissements européens",""],
-"statFundSub":["across {n} Horizon projects","σε {n} έργα Horizon","en {n} proyectos Horizon","su {n} progetti Horizon","sur {n} projets Horizon",""],
-"fCountry":["Country","Χώρα","País","Paese","Pays",""],
-"fAll":["all","όλες","todos","tutti","tous",""],
-"fOn":["{n} on","{n} ενεργές","{n} activos","{n} attivi","{n} actifs",""],
-"fFlags":["Flags","Σημάνσεις","Marcas","Contrassegni","Indicateurs",""],
-"fDefOnly":["Defence-linked entities only","Μόνο φορείς με δεσμούς άμυνας","Solo entidades vinculadas a defensa","Solo entità legate alla difesa","Uniquement les entités liées à la défense",""],
-"fMin":["Minimum projects","Ελάχιστα έργα","Proyectos mínimos","Progetti minimi","Projets minimum",""],
-"fMinHint":["Hides institutions below this count.","Αποκρύπτει ιδρύματα κάτω από αυτόν τον αριθμό.","Oculta las instituciones por debajo de esta cifra.","Nasconde le istituzioni sotto questo numero.","Masque les établissements en dessous de ce nombre.",""],
-"fClear":["Clear all filters","Καθαρισμός όλων των φίλτρων","Borrar todos los filtros","Cancella tutti i filtri","Effacer tous les filtres",""],
-"clUniPl":["European educational institutions","Ευρωπαϊκά εκπαιδευτικά ιδρύματα","Instituciones educativas europeas","Istituzioni educative europee","Établissements d'enseignement européens",""],
-"clUniN":["institutions","ιδρύματα","instituciones","istituzioni","établissements",""],
-"clEntN":["entities","φορείς","entidades","entità","entités",""],
-"empty":["Nothing matches these filters. Widen the country selection or lower the minimum project count.","Τίποτα δεν ταιριάζει με αυτά τα φίλτρα. Διευρύνετε την επιλογή χωρών ή μειώστε τον ελάχιστο αριθμό έργων.","Nada coincide con estos filtros. Amplíe la selección de países o reduzca el mínimo de proyectos.","Nessun risultato con questi filtri. Amplia la selezione dei paesi o riduci il minimo di progetti.","Rien ne correspond à ces filtres. Élargissez la sélection de pays ou réduisez le minimum de projets.",""],
-"resetView":["Reset view","Επαναφορά προβολής","Restablecer vista","Reimposta vista","Réinitialiser la vue",""],
-"recRead":["Reading the graph","Πώς διαβάζεται το γράφημα","Cómo leer el gráfico","Come leggere il grafico","Lire le graphique",""],
-"recIntro":["Every European educational institution sits in the left circle, every Israeli entity in the right one, each bubble sized by how many Horizon projects it takes part in. Click a bubble to trace its connections across to the other side.","Κάθε ευρωπαϊκό εκπαιδευτικό ίδρυμα βρίσκεται στον αριστερό κύκλο και κάθε ισραηλινός φορέας στον δεξιό· το μέγεθος κάθε φούσκας δείχνει σε πόσα έργα Horizon συμμετέχει. Κάντε κλικ σε μια φούσκα για να δείτε τις συνδέσεις της απέναντι.","Cada institución educativa europea está en el círculo izquierdo y cada entidad israelí en el derecho; el tamaño de la burbuja indica en cuántos proyectos Horizon participa. Haga clic en una burbuja para ver sus conexiones al otro lado.","Ogni istituzione educativa europea si trova nel cerchio di sinistra e ogni entità israeliana in quello di destra; la dimensione della bolla indica quanti progetti Horizon la coinvolgono. Clicca su una bolla per tracciarne i collegamenti.","Chaque établissement d'enseignement européen figure dans le cercle de gauche et chaque entité israélienne dans celui de droite ; la taille de la bulle indique le nombre de projets Horizon. Cliquez sur une bulle pour tracer ses connexions.",""],
-"recKey":["Key","Υπόμνημα","Leyenda","Legenda","Légende",""],
-"keyUni":["European educational institution","Ευρωπαϊκό εκπαιδευτικό ίδρυμα","Institución educativa europea","Istituzione educativa europea","Établissement d'enseignement européen",""],
-"keyEnt":["Israeli entity","Ισραηλινός φορέας","Entidad israelí","Entità israeliana","Entité israélienne",""],
-"keyDef":["Defence-linked","Με δεσμούς άμυνας","Vinculada a defensa","Legata alla difesa","Liée à la défense",""],
-"recNext":["Next step","Επόμενο βήμα","Siguiente paso","Passo successivo","Étape suivante",""],
-"recNextTxt":["Clicking a bubble opens its full record here, listing every shared project. Search finds institutions, entities and projects by name.","Κάνοντας κλικ σε μια φούσκα ανοίγει εδώ η πλήρης καρτέλα της, με όλα τα κοινά έργα. Η αναζήτηση βρίσκει ιδρύματα, φορείς και έργα με το όνομα.","Al hacer clic en una burbuja se abre aquí su ficha completa con todos los proyectos compartidos. La búsqueda encuentra instituciones, entidades y proyectos por nombre.","Cliccando su una bolla si apre qui la sua scheda completa con tutti i progetti condivisi. La ricerca trova istituzioni, entità e progetti per nome.","Un clic sur une bulle ouvre ici sa fiche complète avec tous les projets partagés. La recherche trouve établissements, entités et projets par leur nom.",""],
-"recConn":["Connection","Σύνδεση","Conexión","Collegamento","Connexion",""],
-"recProj":["Horizon project","Έργο Horizon","Proyecto Horizon","Progetto Horizon","Projet Horizon",""],
-"defEnt":["Defence-linked Israeli entity","Ισραηλινός φορέας με δεσμούς άμυνας","Entidad israelí vinculada a defensa","Entità israeliana legata alla difesa","Entité israélienne liée à la défense",""],
-"noDef":["No defence link identified","Δεν εντοπίστηκε δεσμός με την άμυνα","Sin vínculo con defensa identificado","Nessun legame con la difesa identificato","Aucun lien avec la défense identifié",""],
-"sShared":["Shared projects","Κοινά έργα","Proyectos compartidos","Progetti condivisi","Projets partagés",""],
-"sCombined":["Combined EU funding","Συνολική χρηματοδότηση ΕΕ","Financiación UE combinada","Finanziamenti UE totali","Financement UE cumulé",""],
-"sProjects":["Projects","Έργα","Proyectos","Progetti","Projets",""],
-"sIlPartners":["Israeli partners","Ισραηλινοί εταίροι","Socios israelíes","Partner israeliani","Partenaires israéliens",""],
-"sEuPartners":["European partners","Ευρωπαίοι εταίροι","Socios europeos","Partner europei","Partenaires européens",""],
-"sCountries":["Countries","Χώρες","Países","Paesi","Pays",""],
-"sContribution":["To European institutions","Προς ευρωπαϊκά ιδρύματα","A instituciones europeas","Alle istituzioni europee","Aux établissements européens",""],
-"sFundingAll":["Total EU contribution","Συνολική συνεισφορά ΕΕ","Contribución total de la UE","Contributo UE totale","Contribution totale de l'UE",""],
-"sRuns":["Runs","Διάρκεια","Duración","Durata","Durée",""],
-"sParticipants":["Participants","Συμμετέχοντες","Participantes","Partecipanti","Participants",""],
-"secIlPart":["Israeli participants","Ισραηλινοί συμμετέχοντες","Participantes israelíes","Partecipanti israeliani","Participants israéliens",""],
-"coordinator":["coordinator","συντονιστής","coordinador","coordinatore","coordinateur",""],
-"defenceShort":["defence","άμυνα","defensa","difesa","défense",""],
-"tConnections":["Connections","Συνδέσεις","Conexiones","Collegamenti","Connexions",""],
-"tInstitutions":["Institutions","Ιδρύματα","Instituciones","Istituzioni","Établissements",""],
-"cInstitution":["Institution","Ίδρυμα","Institución","Istituzione","Établissement",""],
-"cEntity":["Entity","Φορέας","Entidad","Entità","Entité",""],
-"cFunding":["EU funding","Χρηματοδότηση ΕΕ","Financiación UE","Finanziamenti UE","Financement UE",""],
-"cAcronyms":["Project acronyms","Ακρωνύμια έργων","Siglas de proyectos","Acronimi dei progetti","Acronymes des projets",""],
-"cAcronym":["Acronym","Ακρωνύμιο","Sigla","Acronimo","Acronyme",""],
-"cTitle":["Title","Τίτλος","Título","Titolo","Titre",""],
-"cProgramme":["Programme","Πρόγραμμα","Programa","Programma","Programme",""],
-"cCall":["Call","Πρόσκληση","Convocatoria","Bando","Appel",""],
-"cYears":["Years","Έτη","Años","Anni","Années",""],
-"cIsraeli":["Israeli","Ισραηλινοί","Israelíes","Israeliane","Israéliennes",""],
-"tFilterPh":["Filter rows","Φιλτράρισμα γραμμών","Filtrar filas","Filtra righe","Filtrer les lignes",""],
-"tRows":["{n} rows","{n} γραμμές","{n} filas","{n} righe","{n} lignes",""],
-"tCsv":["Download CSV","Λήψη CSV","Descargar CSV","Scarica CSV","Télécharger le CSV",""],
-"tPage":["Page {a} of {b}","Σελίδα {a} από {b}","Página {a} de {b}","Pagina {a} di {b}","Page {a} sur {b}",""],
-"tEmpty":["No rows match these filters. Widen the country selection or clear the text filter.","Καμία γραμμή δεν ταιριάζει. Διευρύνετε την επιλογή χωρών ή καθαρίστε το φίλτρο κειμένου.","Ninguna fila coincide. Amplíe la selección de países o borre el filtro de texto.","Nessuna riga corrisponde. Amplia la selezione dei paesi o cancella il filtro di testo.","Aucune ligne ne correspond. Élargissez la sélection de pays ou effacez le filtre texte.",""],
-"yes":["Yes","Ναι","Sí","Sì","Oui",""],
-"no":["No","Όχι","No","No","Non",""],
-"tipClick":["Click to trace its connections","Κάντε κλικ για να δείτε τις συνδέσεις","Haga clic para ver sus conexiones","Clicca per vedere i collegamenti","Cliquez pour voir ses connexions",""],
-"projectsLc":["projects","έργα","proyectos","progetti","projets",""],
-"noteDefence":["Sample record: flagged as holding military or ministry-of-defence contracts.","Δείγμα εγγραφής: επισημαίνεται ότι κατέχει στρατιωτικές συμβάσεις ή συμβάσεις του υπουργείου Άμυνας.","Registro de muestra: señalada por tener contratos militares o del ministerio de Defensa.","Record di esempio: segnalata per contratti militari o del ministero della Difesa.","Enregistrement d'exemple : signalée comme titulaire de contrats militaires ou du ministère de la Défense.",""],
-"noteNone":["Sample record: no defence contracts identified in this dataset.","Δείγμα εγγραφής: δεν εντοπίστηκαν αμυντικές συμβάσεις σε αυτό το σύνολο δεδομένων.","Registro de muestra: no se identificaron contratos de defensa en este conjunto de datos.","Record di esempio: nessun contratto di difesa individuato in questo set di dati.","Enregistrement d'exemple : aucun contrat de défense identifié dans ce jeu de données.",""],
-"scopeNote":["Data covers all projects signed under Horizon Europe (2021–2027); collection stopped in May 2026.","Τα δεδομένα καλύπτουν όλα τα έργα που υπογράφηκαν στο πλαίσιο του Horizon Europe (2021–2027)· η συλλογή σταμάτησε τον Μάιο του 2026.","Los datos abarcan todos los proyectos firmados en el marco de Horizonte Europa (2021–2027); la recopilación finalizó en mayo de 2026.","I dati coprono tutti i progetti firmati nell'ambito di Orizzonte Europa (2021–2027); la raccolta si è conclusa a maggio 2026.","Les données couvrent tous les projets signés dans le cadre d'Horizon Europe (2021–2027) ; la collecte s'est arrêtée en mai 2026.",""],
-"aiDisclaimer":["The front-end of this tool was produced with AI assistance. Data collection, verification and editorial work were carried out by people.","Το front-end αυτού του εργαλείου αναπτύχθηκε με τη βοήθεια τεχνητής νοημοσύνης. Η συλλογή, η επαλήθευση και η επιμέλεια των δεδομένων έγιναν από ανθρώπους.","La interfaz de esta herramienta se ha desarrollado con asistencia de IA. La recopilación, la verificación y la edición de los datos las realizaron personas.","L'interfaccia di questo strumento è stata realizzata con l'assistenza dell'IA. La raccolta, la verifica e l'editing dei dati sono stati svolti da persone.","L'interface de cet outil a été produite avec l'aide de l'IA. La collecte, la vérification et l'édition des données ont été réalisées par des humains.",""],
-"sTotalCost":["Total project cost","Συνολικό κόστος έργου","Coste total del proyecto","Costo totale del progetto","Coût total du projet",""],
-"back":["Back","Πίσω","Atrás","Indietro","Retour",""],
-"fStateOnly":["Israeli state bodies only","Μόνο κρατικοί φορείς Ισραήλ","Solo organismos estatales israelíes","Solo enti statali israeliani","Uniquement les organismes d'État israéliens",""],
-"fPostICJOnly":["Signed after ICJ measures only","Μόνο μετά τα μέτρα του ΔΔ","Solo tras las medidas de la CIJ","Solo dopo le misure della CIG","Uniquement après les mesures de la CIJ",""],
-"keyState":["Israeli state body","Κρατικός φορέας Ισραήλ","Organismo estatal israelí","Ente statale israeliano","Organisme d'État israélien",""],
-"postICJ":["Signed after ICJ provisional measures","Υπογράφηκε μετά τα προσωρινά μέτρα του ΔΔ","Firmado tras las medidas provisionales de la CIJ","Firmato dopo le misure provvisorie della CIG","Signé après les mesures conservatoires de la CIJ",""],
-"postICJShort":["After ICJ measures","Μετά τα μέτρα ΔΔ","Tras medidas CIJ","Dopo misure CIG","Après mesures CIJ",""],
-"icjDate":["26 January 2024","26 Ιανουαρίου 2024","26 de enero de 2024","26 gennaio 2024","26 janvier 2024",""],
-"cSigned":["Signed","Υπογραφή","Firmado","Firmato","Signé",""],
-"stateShort":["state","κρατικός","estatal","statale","État",""],
-"sCoordinator":["Coordinator","Συντονιστής","Coordinador","Coordinatore","Coordinateur",""],
-"sProjectId":["Project ID","Κωδικός έργου","ID del proyecto","ID progetto","ID du projet",""],
-"sSigned":["Grant signed","Υπογραφή επιχορήγησης","Subvención firmada","Sovvenzione firmata","Subvention signée",""],
-"sObjective":["Project description","Περιγραφή έργου","Descripción del proyecto","Descrizione del progetto","Description du projet",""],
-"viewCordis":["View on CORDIS","Προβολή στο CORDIS","Ver en CORDIS","Vedi su CORDIS","Voir sur CORDIS",""],
-"cActivity":["Activity type","Τύπος δραστηριότητας","Tipo de actividad","Tipo di attività","Type d'activité",""],
-"fActivityAll":["All activity types","Όλοι οι τύποι","Todos los tipos","Tutti i tipi","Tous les types",""],
-"officialTitle":["Official title","Επίσημος τίτλος","Título oficial","Titolo ufficiale","Titre officiel",""],
-"eK":["k","χιλ.","k","mila","k",""],
-"eM":["m","εκ.","M","mln","M",""],
-"eB":["bn","δισ.","mil M","mld","Md",""]
+"title":["Horizon collaboration register","Μητρώο συνεργασιών Horizon","Registro de colaboraciones Horizon","Registro delle collaborazioni Horizon","Registre des collaborations Horizon","Horizon-samenwerkingsregister"],
+"tabClusters":["Clusters","Ομάδες","Grupos","Gruppi","Groupes","Clusters"],
+"tabTable":["Table","Πίνακας","Tabla","Tabella","Tableau","Tabel"],
+"filters":["Filters","Φίλτρα","Filtros","Filtri","Filtres","Filters"],
+"close":["Close","Κλείσιμο","Cerrar","Chiudi","Fermer","Sluiten"],
+"searchPh":["Search for your university","Αναζητήστε το πανεπιστήμιό σας","Busque su universidad","Cerca la tua università","Recherchez votre université","Zoek uw universiteit"],
+"searchHint":["Start typing the name of a university to see every Israeli entity it shares a Horizon project with. Entity and project names work too.","Αρχίστε να πληκτρολογείτε το όνομα ενός πανεπιστημίου για να δείτε κάθε ισραηλινό φορέα με τον οποίο μοιράζεται έργο Horizon. Λειτουργούν και ονόματα φορέων ή έργων.","Empiece a escribir el nombre de una universidad para ver todas las entidades israelíes con las que comparte un proyecto Horizon. También funcionan nombres de entidades y proyectos.","Inizia a digitare il nome di un'università per vedere ogni entità israeliana con cui condivide un progetto Horizon. Funzionano anche i nomi di entità e progetti.","Commencez à saisir le nom d'une université pour voir chaque entité israélienne avec laquelle elle partage un projet Horizon. Les noms d'entités et de projets fonctionnent aussi.","Typ de naam van een universiteit om elke Israëlische entiteit te zien waarmee zij een Horizon-project deelt. Namen van entiteiten en projecten werken ook."],
+"grpUni":["Universities","Πανεπιστήμια","Universidades","Università","Universités","Universiteiten"],
+"grpEnt":["Israeli entities","Ισραηλινοί φορείς","Entidades israelíes","Entità israeliane","Entités israéliennes","Israëlische entiteiten"],
+"grpPro":["Horizon projects","Έργα Horizon","Proyectos Horizon","Progetti Horizon","Projets Horizon","Horizon-projecten"],
+"noMatch":["No university, entity or project matches “{q}”. Try a shorter fragment of the name.","Κανένα πανεπιστήμιο, φορέας ή έργο δεν ταιριάζει με «{q}». Δοκιμάστε ένα συντομότερο τμήμα του ονόματος.","Ninguna universidad, entidad o proyecto coincide con «{q}». Pruebe con un fragmento más corto.","Nessuna università, entità o progetto corrisponde a «{q}». Prova con un frammento più breve.","Aucune université, entité ou projet ne correspond à « {q} ». Essayez un fragment plus court.","Geen universiteit, entiteit of project komt overeen met “{q}”. Probeer een korter deel van de naam."],
+"statUni":["European institutions collaborating","Ευρωπαϊκά ιδρύματα σε συνεργασία","Instituciones europeas que colaboran","Istituzioni europee che collaborano","Établissements européens en collaboration","Samenwerkende Europese instellingen"],
+"statUniSub":["of {n} across EU27 + Norway","από {n} σε ΕΕ27 + Νορβηγία","de {n} en la UE27 + Noruega","su {n} in UE27 + Norvegia","sur {n} dans l'UE27 + Norvège","van {n} in EU27 + Noorwegen"],
+"statDef":["Defence-linked Israeli entities","Ισραηλινοί φορείς με δεσμούς άμυνας","Entidades israelíes vinculadas a defensa","Entità israeliane legate alla difesa","Entités israéliennes liées à la défense","Israëlische entiteiten met defensiebanden"],
+"statDefSub":["{a} of {b} connections run to one","{a} από {b} συνδέσεις οδηγούν σε έναν","{a} de {b} conexiones llevan a una","{a} su {b} collegamenti portano a una","{a} des {b} connexions mènent à l'une d'elles","{a} van {b} verbindingen leiden naar één"],
+"statFund":["EU funding to European institutions","Χρηματοδότηση ΕΕ προς ευρωπαϊκά ιδρύματα","Financiación de la UE a instituciones europeas","Finanziamenti UE alle istituzioni europee","Financement UE aux établissements européens","EU-financiering aan Europese instellingen"],
+"statFundSub":["across {n} Horizon projects","σε {n} έργα Horizon","en {n} proyectos Horizon","su {n} progetti Horizon","sur {n} projets Horizon","verdeeld over {n} Horizon-projecten"],
+"fCountry":["Country","Χώρα","País","Paese","Pays","Land"],
+"fAll":["all","όλες","todos","tutti","tous","alle"],
+"fOn":["{n} on","{n} ενεργές","{n} activos","{n} attivi","{n} actifs","{n} aan"],
+"fFlags":["Flags","Σημάνσεις","Marcas","Contrassegni","Indicateurs","Kenmerken"],
+"fDefOnly":["Defence-linked entities only","Μόνο φορείς με δεσμούς άμυνας","Solo entidades vinculadas a defensa","Solo entità legate alla difesa","Uniquement les entités liées à la défense","Alleen entiteiten met defensiebanden"],
+"fMin":["Minimum projects","Ελάχιστα έργα","Proyectos mínimos","Progetti minimi","Projets minimum","Minimum aantal projecten"],
+"fMinHint":["Hides institutions below this count.","Αποκρύπτει ιδρύματα κάτω από αυτόν τον αριθμό.","Oculta las instituciones por debajo de esta cifra.","Nasconde le istituzioni sotto questo numero.","Masque les établissements en dessous de ce nombre.","Verbergt instellingen onder dit aantal."],
+"fClear":["Clear all filters","Καθαρισμός όλων των φίλτρων","Borrar todos los filtros","Cancella tutti i filtri","Effacer tous les filtres","Alle filters wissen"],
+"clUniPl":["European educational institutions","Ευρωπαϊκά εκπαιδευτικά ιδρύματα","Instituciones educativas europeas","Istituzioni educative europee","Établissements d'enseignement européens","Europese onderwijsinstellingen"],
+"clUniN":["institutions","ιδρύματα","instituciones","istituzioni","établissements","instellingen"],
+"clEntN":["entities","φορείς","entidades","entità","entités","entiteiten"],
+"empty":["Nothing matches these filters. Widen the country selection or lower the minimum project count.","Τίποτα δεν ταιριάζει με αυτά τα φίλτρα. Διευρύνετε την επιλογή χωρών ή μειώστε τον ελάχιστο αριθμό έργων.","Nada coincide con estos filtros. Amplíe la selección de países o reduzca el mínimo de proyectos.","Nessun risultato con questi filtri. Amplia la selezione dei paesi o riduci il minimo di progetti.","Rien ne correspond à ces filtres. Élargissez la sélection de pays ou réduisez le minimum de projets.","Niets komt overeen met deze filters. Verruim de landselectie of verlaag het minimum aantal projecten."],
+"resetView":["Reset view","Επαναφορά προβολής","Restablecer vista","Reimposta vista","Réinitialiser la vue","Weergave herstellen"],
+"recRead":["Reading the graph","Πώς διαβάζεται το γράφημα","Cómo leer el gráfico","Come leggere il grafico","Lire le graphique","De grafiek lezen"],
+"recIntro":["Every European educational institution sits in the left circle, every Israeli entity in the right one, each bubble sized by how many Horizon projects it takes part in. Click a bubble to trace its connections across to the other side.","Κάθε ευρωπαϊκό εκπαιδευτικό ίδρυμα βρίσκεται στον αριστερό κύκλο και κάθε ισραηλινός φορέας στον δεξιό· το μέγεθος κάθε φούσκας δείχνει σε πόσα έργα Horizon συμμετέχει. Κάντε κλικ σε μια φούσκα για να δείτε τις συνδέσεις της απέναντι.","Cada institución educativa europea está en el círculo izquierdo y cada entidad israelí en el derecho; el tamaño de la burbuja indica en cuántos proyectos Horizon participa. Haga clic en una burbuja para ver sus conexiones al otro lado.","Ogni istituzione educativa europea si trova nel cerchio di sinistra e ogni entità israeliana in quello di destra; la dimensione della bolla indica quanti progetti Horizon la coinvolgono. Clicca su una bolla per tracciarne i collegamenti.","Chaque établissement d'enseignement européen figure dans le cercle de gauche et chaque entité israélienne dans celui de droite ; la taille de la bulle indique le nombre de projets Horizon. Cliquez sur une bulle pour tracer ses connexions.","Elke Europese onderwijsinstelling staat in de linkercirkel en elke Israëlische entiteit in de rechter; de grootte van elke bol geeft aan aan hoeveel Horizon-projecten zij deelneemt. Klik op een bol om de verbindingen naar de andere kant te volgen."],
+"recKey":["Key","Υπόμνημα","Leyenda","Legenda","Légende","Legenda"],
+"keyUni":["European educational institution","Ευρωπαϊκό εκπαιδευτικό ίδρυμα","Institución educativa europea","Istituzione educativa europea","Établissement d'enseignement européen","Europese onderwijsinstelling"],
+"keyEnt":["Israeli entity","Ισραηλινός φορέας","Entidad israelí","Entità israeliana","Entité israélienne","Israëlische entiteit"],
+"keyDef":["Defence-linked","Με δεσμούς άμυνας","Vinculada a defensa","Legata alla difesa","Liée à la défense","Defensiebanden"],
+"recNext":["Next step","Επόμενο βήμα","Siguiente paso","Passo successivo","Étape suivante","Volgende stap"],
+"recNextTxt":["Clicking a bubble opens its full record here, listing every shared project. Search finds institutions, entities and projects by name.","Κάνοντας κλικ σε μια φούσκα ανοίγει εδώ η πλήρης καρτέλα της, με όλα τα κοινά έργα. Η αναζήτηση βρίσκει ιδρύματα, φορείς και έργα με το όνομα.","Al hacer clic en una burbuja se abre aquí su ficha completa con todos los proyectos compartidos. La búsqueda encuentra instituciones, entidades y proyectos por nombre.","Cliccando su una bolla si apre qui la sua scheda completa con tutti i progetti condivisi. La ricerca trova istituzioni, entità e progetti per nome.","Un clic sur une bulle ouvre ici sa fiche complète avec tous les projets partagés. La recherche trouve établissements, entités et projets par leur nom.","Door op een bol te klikken opent hier het volledige dossier met alle gedeelde projecten. Zoeken vindt instellingen, entiteiten en projecten op naam."],
+"recConn":["Connection","Σύνδεση","Conexión","Collegamento","Connexion","Verbinding"],
+"recProj":["Horizon project","Έργο Horizon","Proyecto Horizon","Progetto Horizon","Projet Horizon","Horizon-project"],
+"defEnt":["Defence-linked Israeli entity","Ισραηλινός φορέας με δεσμούς άμυνας","Entidad israelí vinculada a defensa","Entità israeliana legata alla difesa","Entité israélienne liée à la défense","Israëlische entiteit met defensiebanden"],
+"noDef":["No defence link identified","Δεν εντοπίστηκε δεσμός με την άμυνα","Sin vínculo con defensa identificado","Nessun legame con la difesa identificato","Aucun lien avec la défense identifié","Geen defensieband vastgesteld"],
+"sShared":["Shared projects","Κοινά έργα","Proyectos compartidos","Progetti condivisi","Projets partagés","Gedeelde projecten"],
+"sCombined":["Combined EU funding","Συνολική χρηματοδότηση ΕΕ","Financiación UE combinada","Finanziamenti UE totali","Financement UE cumulé","Gezamenlijke EU-financiering"],
+"sProjects":["Projects","Έργα","Proyectos","Progetti","Projets","Projecten"],
+"sIlPartners":["Israeli partners","Ισραηλινοί εταίροι","Socios israelíes","Partner israeliani","Partenaires israéliens","Israëlische partners"],
+"sEuPartners":["European partners","Ευρωπαίοι εταίροι","Socios europeos","Partner europei","Partenaires européens","Europese partners"],
+"sCountries":["Countries","Χώρες","Países","Paesi","Pays","Landen"],
+"sContribution":["To European institutions","Προς ευρωπαϊκά ιδρύματα","A instituciones europeas","Alle istituzioni europee","Aux établissements européens","Aan Europese instellingen"],
+"sFundingAll":["Total EU contribution","Συνολική συνεισφορά ΕΕ","Contribución total de la UE","Contributo UE totale","Contribution totale de l'UE","Totale EU-bijdrage"],
+"sRuns":["Runs","Διάρκεια","Duración","Durata","Durée","Looptijd"],
+"sParticipants":["Participants","Συμμετέχοντες","Participantes","Partecipanti","Participants","Deelnemers"],
+"secIlPart":["Israeli participants","Ισραηλινοί συμμετέχοντες","Participantes israelíes","Partecipanti israeliani","Participants israéliens","Israëlische deelnemers"],
+"coordinator":["coordinator","συντονιστής","coordinador","coordinatore","coordinateur","coördinator"],
+"defenceShort":["defence","άμυνα","defensa","difesa","défense","defensie"],
+"tConnections":["Connections","Συνδέσεις","Conexiones","Collegamenti","Connexions","Verbindingen"],
+"tInstitutions":["Institutions","Ιδρύματα","Instituciones","Istituzioni","Établissements","Instellingen"],
+"cInstitution":["Institution","Ίδρυμα","Institución","Istituzione","Établissement","Instelling"],
+"cEntity":["Entity","Φορέας","Entidad","Entità","Entité","Entiteit"],
+"cFunding":["EU funding","Χρηματοδότηση ΕΕ","Financiación UE","Finanziamenti UE","Financement UE","EU-financiering"],
+"cAcronyms":["Project acronyms","Ακρωνύμια έργων","Siglas de proyectos","Acronimi dei progetti","Acronymes des projets","Projectacroniemen"],
+"cAcronym":["Acronym","Ακρωνύμιο","Sigla","Acronimo","Acronyme","Acroniem"],
+"cTitle":["Title","Τίτλος","Título","Titolo","Titre","Titel"],
+"cProgramme":["Programme","Πρόγραμμα","Programa","Programma","Programme","Programma"],
+"cCall":["Call","Πρόσκληση","Convocatoria","Bando","Appel","Oproep"],
+"cYears":["Years","Έτη","Años","Anni","Années","Jaren"],
+"cIsraeli":["Israeli","Ισραηλινοί","Israelíes","Israeliane","Israéliennes","Israëlisch"],
+"tFilterPh":["Filter rows","Φιλτράρισμα γραμμών","Filtrar filas","Filtra righe","Filtrer les lignes","Rijen filteren"],
+"tRows":["{n} rows","{n} γραμμές","{n} filas","{n} righe","{n} lignes","{n} rijen"],
+"tCsv":["Download CSV","Λήψη CSV","Descargar CSV","Scarica CSV","Télécharger le CSV","CSV downloaden"],
+"tPage":["Page {a} of {b}","Σελίδα {a} από {b}","Página {a} de {b}","Pagina {a} di {b}","Page {a} sur {b}","Pagina {a} van {b}"],
+"tEmpty":["No rows match these filters. Widen the country selection or clear the text filter.","Καμία γραμμή δεν ταιριάζει. Διευρύνετε την επιλογή χωρών ή καθαρίστε το φίλτρο κειμένου.","Ninguna fila coincide. Amplíe la selección de países o borre el filtro de texto.","Nessuna riga corrisponde. Amplia la selezione dei paesi o cancella il filtro di testo.","Aucune ligne ne correspond. Élargissez la sélection de pays ou effacez le filtre texte.","Geen rijen komen overeen. Verruim de landselectie of wis het tekstfilter."],
+"yes":["Yes","Ναι","Sí","Sì","Oui","Ja"],
+"no":["No","Όχι","No","No","Non","Nee"],
+"tipClick":["Click to trace its connections","Κάντε κλικ για να δείτε τις συνδέσεις","Haga clic para ver sus conexiones","Clicca per vedere i collegamenti","Cliquez pour voir ses connexions","Klik om de verbindingen te zien"],
+"projectsLc":["projects","έργα","proyectos","progetti","projets","projecten"],
+"noteDefence":["Sample record: flagged as holding military or ministry-of-defence contracts.","Δείγμα εγγραφής: επισημαίνεται ότι κατέχει στρατιωτικές συμβάσεις ή συμβάσεις του υπουργείου Άμυνας.","Registro de muestra: señalada por tener contratos militares o del ministerio de Defensa.","Record di esempio: segnalata per contratti militari o del ministero della Difesa.","Enregistrement d'exemple : signalée comme titulaire de contrats militaires ou du ministère de la Défense.","Voorbeeld: aangemerkt als houder van militaire contracten of contracten van het ministerie van Defensie."],
+"noteNone":["Sample record: no defence contracts identified in this dataset.","Δείγμα εγγραφής: δεν εντοπίστηκαν αμυντικές συμβάσεις σε αυτό το σύνολο δεδομένων.","Registro de muestra: no se identificaron contratos de defensa en este conjunto de datos.","Record di esempio: nessun contratto di difesa individuato in questo set di dati.","Enregistrement d'exemple : aucun contrat de défense identifié dans ce jeu de données.","Voorbeeld: geen defensiecontracten vastgesteld in deze dataset."],
+"scopeNote":["Data covers all projects signed under Horizon Europe (2021–2027); collection stopped in May 2026.","Τα δεδομένα καλύπτουν όλα τα έργα που υπογράφηκαν στο πλαίσιο του Horizon Europe (2021–2027)· η συλλογή σταμάτησε τον Μάιο του 2026.","Los datos abarcan todos los proyectos firmados en el marco de Horizonte Europa (2021–2027); la recopilación finalizó en mayo de 2026.","I dati coprono tutti i progetti firmati nell'ambito di Orizzonte Europa (2021–2027); la raccolta si è conclusa a maggio 2026.","Les données couvrent tous les projets signés dans le cadre d'Horizon Europe (2021–2027) ; la collecte s'est arrêtée en mai 2026.","De gegevens omvatten alle projecten die zijn ondertekend onder Horizon Europe (2021–2027); de verzameling is gestopt in mei 2026."],
+"aiDisclaimer":["The front-end of this tool was produced with AI assistance. Data collection, verification and editorial work were carried out by people.","Το front-end αυτού του εργαλείου αναπτύχθηκε με τη βοήθεια τεχνητής νοημοσύνης. Η συλλογή, η επαλήθευση και η επιμέλεια των δεδομένων έγιναν από ανθρώπους.","La interfaz de esta herramienta se ha desarrollado con asistencia de IA. La recopilación, la verificación y la edición de los datos las realizaron personas.","L'interfaccia di questo strumento è stata realizzata con l'assistenza dell'IA. La raccolta, la verifica e l'editing dei dati sono stati svolti da persone.","L'interface de cet outil a été produite avec l'aide de l'IA. La collecte, la vérification et l'édition des données ont été réalisées par des humains.","De front-end van dit instrument is gemaakt met behulp van AI. Gegevensverzameling, verificatie en redactie zijn door mensen uitgevoerd."],
+"sTotalCost":["Total project cost","Συνολικό κόστος έργου","Coste total del proyecto","Costo totale del progetto","Coût total du projet","Totale projectkosten"],
+"back":["Back","Πίσω","Atrás","Indietro","Retour","Terug"],
+"fStateOnly":["Israeli state bodies only","Μόνο κρατικοί φορείς Ισραήλ","Solo organismos estatales israelíes","Solo enti statali israeliani","Uniquement les organismes d'État israéliens","Alleen Israëlische staatsorganen"],
+"fPostICJOnly":["Signed after ICJ measures only","Μόνο μετά τα μέτρα του ΔΔ","Solo tras las medidas de la CIJ","Solo dopo le misure della CIG","Uniquement après les mesures de la CIJ","Alleen na de maatregelen van het IGH"],
+"keyState":["Israeli state body","Κρατικός φορέας Ισραήλ","Organismo estatal israelí","Ente statale israeliano","Organisme d'État israélien","Israëlisch staatsorgaan"],
+"postICJ":["Signed after ICJ provisional measures","Υπογράφηκε μετά τα προσωρινά μέτρα του ΔΔ","Firmado tras las medidas provisionales de la CIJ","Firmato dopo le misure provvisorie della CIG","Signé après les mesures conservatoires de la CIJ","Ondertekend na de voorlopige maatregelen van het IGH"],
+"postICJShort":["After ICJ measures","Μετά τα μέτρα ΔΔ","Tras medidas CIJ","Dopo misure CIG","Après mesures CIJ","Na IGH-maatregelen"],
+"icjDate":["26 January 2024","26 Ιανουαρίου 2024","26 de enero de 2024","26 gennaio 2024","26 janvier 2024","26 januari 2024"],
+"cSigned":["Signed","Υπογραφή","Firmado","Firmato","Signé","Ondertekend"],
+"stateShort":["state","κρατικός","estatal","statale","État","staat"],
+"sCoordinator":["Coordinator","Συντονιστής","Coordinador","Coordinatore","Coordinateur","Coördinator"],
+"sProjectId":["Project ID","Κωδικός έργου","ID del proyecto","ID progetto","ID du projet","Projectnummer"],
+"sSigned":["Grant signed","Υπογραφή επιχορήγησης","Subvención firmada","Sovvenzione firmata","Subvention signée","Subsidie ondertekend"],
+"sObjective":["Project description","Περιγραφή έργου","Descripción del proyecto","Descrizione del progetto","Description du projet","Projectbeschrijving"],
+"viewCordis":["View on CORDIS","Προβολή στο CORDIS","Ver en CORDIS","Vedi su CORDIS","Voir sur CORDIS","Bekijk op CORDIS"],
+"cActivity":["Activity type","Τύπος δραστηριότητας","Tipo de actividad","Tipo di attività","Type d'activité","Activiteitstype"],
+"fActivityAll":["All activity types","Όλοι οι τύποι","Todos los tipos","Tutti i tipi","Tous les types","Alle activiteitstypen"],
+"officialTitle":["Official title","Επίσημος τίτλος","Título oficial","Titolo ufficiale","Titre officiel","Officiële titel"],
+"eK":["k","χιλ.","k","mila","k","k"],
+"eM":["m","εκ.","M","mln","M","mln"],
+"eB":["bn","δισ.","mil M","mld","Md","mld"],
+"clHint":["Click a bubble to see its connections","Κάντε κλικ σε μια φούσκα για να δείτε τις συνδέσεις της","Haga clic en una burbuja para ver sus conexiones","Clicca su una bolla per vederne i collegamenti","Cliquez sur une bulle pour voir ses connexions","Klik op een bol om de verbindingen te zien"]
 };
 
 
@@ -864,22 +878,6 @@ const clusters=(function(){
       ctx.globalAlpha=1;
     });
 
-    // labels: biggest bubbles only, more as you zoom
-    ctx.textAlign="center"; ctx.textBaseline="middle";
-    const budget=Math.round(10*Math.max(1,zt.k*1.6));
-    v.nodes.forEach(n=>{
-      if(n.cx==null) return;
-      const show = (on && lit.has(n.id) && n.cr*zt.k>9) || (!on && n.labelRank<budget);
-      if(!show) return;
-      const fs=Math.min(n.cr*0.5,11/zt.k);
-      if(fs*zt.k<5) return;
-      ctx.font="600 "+fs+"px "+getComputedStyle(document.body).fontFamily;
-      const words=n.name.split(" ");
-      const label=words.length>1&&n.cr*zt.k<34 ? words[0] : n.name;
-      const txt = ctx.measureText(label).width>n.cr*1.85 ? words[0].slice(0,6) : label;
-      ctx.fillStyle="#F1EEEB";
-      ctx.fillText(txt,n.cx,n.cy);
-    });
     ctx.restore();
   }
 
@@ -1434,8 +1432,50 @@ $("#recscrim").addEventListener("click",()=>select(null));
   const sel=$("#lang");
   sel.innerHTML=LANGS.map(([code,name],i)=>
     `<option value="${i}">${esc(name)}</option>`).join("");
-  sel.addEventListener("change",()=>{ setLang(+sel.value); });
+  sel.addEventListener("change",()=>{
+    const i=+sel.value, code=LANG_CODES[i];
+    const url=siblingUrl(code);
+    if(url && url!==location.href){
+      try{ location.assign(url); return; }catch(e){ /* fall through to in-page */ }
+    }
+    setLang(i);
+    try{
+      const u=new URL(location.href);
+      u.searchParams.set("lang",code);
+      history.replaceState(null,"",u.href);
+    }catch(e){ /* file:// without history support — the language still changes */ }
+  });
 })();
+
+const LANG_CODES=LANGS.map(l=>l[0]);
+
+// ?lang=xx in the address bar wins over the language this file was built for,
+// so a link can point at a specific language whichever file is served.
+function langFromUrl(){
+  try{
+    const q=new URLSearchParams(location.search).get("lang");
+    return LANG_CODES.indexOf(String(q||"").toLowerCase());
+  }catch(e){ return -1; }
+}
+
+// Published at /horizon-universities-israel/<code>, but also opened locally as
+// horizon-explorer-<code>.html. Both shapes are handled, plus /<code>/index.html.
+// Anything else falls back to ?lang= on the current page.
+const LANG_SEG=/(en|el|es|it|fr|nl)/i;
+function siblingUrl(code){
+  try{
+    const u=new URL(location.href);
+    const p=u.pathname;
+    let m, np=null;
+    if((m=p.match(/^(.*[-_])(en|el|es|it|fr|nl)(\.html?)$/i)))            np=m[1]+code+m[3];
+    else if((m=p.match(/^(.*\/)(en|el|es|it|fr|nl)(\/index\.html?)$/i))) np=m[1]+code+m[3];
+    else if((m=p.match(/^(.*\/)(en|el|es|it|fr|nl)(\/?)$/i)))            np=m[1]+code+m[3];
+    if(np===null) return null;
+    u.pathname=np;
+    u.searchParams.delete("lang");
+    return u.href;
+  }catch(e){ return null; }
+}
 
 function setLang(i){
   LANG=i;
@@ -1479,7 +1519,8 @@ if(typeof d3==="undefined"){
   renderRecord();
   clusters.init();
   clusters.repack();
-  setLang(2);
+  const _u=langFromUrl();
+  setLang(_u>=0?_u:LANG);
 }
 </script>
 </body>
