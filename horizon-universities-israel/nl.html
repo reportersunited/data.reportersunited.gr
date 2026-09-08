@@ -35,12 +35,20 @@ button{font-family:inherit}
 #app{height:100%;display:flex;flex-direction:column}
 header.masthead{border-bottom:1px solid var(--rule);background:var(--panel);padding:10px 18px 12px}
 .mast-top{display:flex;align-items:center;gap:16px;margin-bottom:10px}
+@media (min-width:861px){
+  header.masthead{display:flex;align-items:center;gap:16px;padding:10px 18px}
+  .mast-top{display:contents}
+  .brand{order:1}
+  .searchwrap{order:2;flex:1 1 320px;max-width:520px;width:auto}
+  #viewtabs{order:3;margin-left:auto}
+  #lang{order:4}
+}
 .mast-top .seg{margin-left:auto}
 .wordmark{font-family:var(--serif);font-size:16.5px}
 .counters{display:flex;gap:26px;padding:7px 18px;border-bottom:1px solid var(--rule-soft);font-family:var(--mono);font-size:11.5px;color:var(--muted);background:var(--panel);flex-wrap:wrap;align-items:center}
 .counters b{color:var(--ink);font-weight:600}
 .body{flex:1;display:flex;min-height:0}
-.site-footer .sep{margin:0 7px;color:var(--rule)}
+.site-footer .sep{margin:0 8px;color:var(--ink70);font-weight:700}
 .site-footer{flex-shrink:0;border-top:1px solid var(--rule);background:var(--panel);
   padding:7px 18px;font-size:11px;line-height:1.45;color:var(--muted)}
 main.stage{flex:1;min-width:0;position:relative}
@@ -200,9 +208,12 @@ tbody tr:hover{background:var(--paper)}
   header.masthead{padding:8px 12px 10px}
   .mast-top{gap:10px;margin-bottom:8px}
   .wordmark{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #lang{max-width:104px}
   .mast-top .seg{margin-left:auto}
   .seg button{padding:5px 10px}
-  #search{height:42px;font-size:16px;padding:0 14px 0 40px}  /* 16px stops iOS zooming on focus */
+  .searchwrap{width:100%}
+  #search{height:44px;font-size:16px;padding:0 14px 0 40px}  /* 16px stops iOS zooming on focus */
+  .searchwrap svg{left:13px}
   .searchwrap kbd{display:none}
 
   .rail-toggle{display:none}
@@ -232,6 +243,12 @@ tbody tr:hover{background:var(--paper)}
   .site-footer{padding:6px 12px;font-size:10px}
   .canvas-controls{left:10px;bottom:10px}
 }
+@media (max-width:560px){
+  .wordmark{display:none}
+  .mast-top{gap:8px}
+  .mast-top .seg{margin-left:0}
+  #lang{margin-left:auto}
+}
 @media (max-width:420px){
   .stat .k{font-size:10px}
   #lang{max-width:74px}
@@ -243,9 +260,15 @@ tbody tr:hover{background:var(--paper)}
   <header class="masthead">
     <div class="mast-top">
       <button class="btn mobile-only" id="openfilters" data-i18n="filters">Filters</button>
-      <div style="display:flex;align-items:baseline;gap:9px;min-width:0">
+      <div class="brand" style="display:flex;align-items:baseline;gap:9px;min-width:0">
         <span class="wordmark" data-i18n="title">Horizon collaboration register</span>
       </div>
+      <div class="seg" id="viewtabs">
+        <button data-view="clusters" class="on" data-i18n="tabClusters">Clusters</button>
+        <button data-view="table" data-i18n="tabTable">Table</button>
+      </div>
+      <select id="lang" aria-label="Language"></select>
+    </div>
     <div class="searchwrap">
       <svg width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
         <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 L14.5 14.5" stroke-linecap="round"/>
@@ -254,12 +277,6 @@ tbody tr:hover{background:var(--paper)}
              aria-label="Search for your university, an Israeli entity, or a Horizon project">
       <kbd>/</kbd>
       <div id="results" class="hidden"></div>
-    </div>
-      <div class="seg" id="viewtabs">
-        <button data-view="clusters" class="on" data-i18n="tabClusters">Clusters</button>
-        <button data-view="table" data-i18n="tabTable">Table</button>
-      </div>
-      <select id="lang" aria-label="Language"></select>
     </div>
   </header>
 
@@ -296,6 +313,8 @@ tbody tr:hover{background:var(--paper)}
     <span class="sep">·</span>
     <span data-i18n="aiDisclaimer">The front-end of this tool was produced with AI assistance.
       Data collection, verification and editorial work were carried out by people.</span>
+    <span class="sep">·</span>
+    <span data-i18n="credit">Web app created by Spoovio</span>
   </footer>
 </div>
 
@@ -392,6 +411,7 @@ const STR={
 "projectsLc":["projects","έργα","proyectos","progetti","projets","projecten"],
 "noteDefence":["Sample record: flagged as holding military or ministry-of-defence contracts.","Δείγμα εγγραφής: επισημαίνεται ότι κατέχει στρατιωτικές συμβάσεις ή συμβάσεις του υπουργείου Άμυνας.","Registro de muestra: señalada por tener contratos militares o del ministerio de Defensa.","Record di esempio: segnalata per contratti militari o del ministero della Difesa.","Enregistrement d'exemple : signalée comme titulaire de contrats militaires ou du ministère de la Défense.","Voorbeeld: aangemerkt als houder van militaire contracten of contracten van het ministerie van Defensie."],
 "noteNone":["Sample record: no defence contracts identified in this dataset.","Δείγμα εγγραφής: δεν εντοπίστηκαν αμυντικές συμβάσεις σε αυτό το σύνολο δεδομένων.","Registro de muestra: no se identificaron contratos de defensa en este conjunto de datos.","Record di esempio: nessun contratto di difesa individuato in questo set di dati.","Enregistrement d'exemple : aucun contrat de défense identifié dans ce jeu de données.","Voorbeeld: geen defensiecontracten vastgesteld in deze dataset."],
+"credit":["Web app created by Spoovio","Η διαδικτυακή εφαρμογή δημιουργήθηκε από τη Spoovio","Aplicación web creada por Spoovio","Applicazione web creata da Spoovio","Application web créée par Spoovio","Webapp gemaakt door Spoovio"],
 "scopeNote":["Data covers all projects signed under Horizon Europe (2021–2027); collection stopped in May 2026.","Τα δεδομένα καλύπτουν όλα τα έργα που υπογράφηκαν στο πλαίσιο του Horizon Europe (2021–2027)· η συλλογή σταμάτησε τον Μάιο του 2026.","Los datos abarcan todos los proyectos firmados en el marco de Horizonte Europa (2021–2027); la recopilación finalizó en mayo de 2026.","I dati coprono tutti i progetti firmati nell'ambito di Orizzonte Europa (2021–2027); la raccolta si è conclusa a maggio 2026.","Les données couvrent tous les projets signés dans le cadre d'Horizon Europe (2021–2027) ; la collecte s'est arrêtée en mai 2026.","De gegevens omvatten alle projecten die zijn ondertekend onder Horizon Europe (2021–2027); de verzameling is gestopt in mei 2026."],
 "aiDisclaimer":["The front-end of this tool was produced with AI assistance. Data collection, verification and editorial work were carried out by people.","Το front-end αυτού του εργαλείου αναπτύχθηκε με τη βοήθεια τεχνητής νοημοσύνης. Η συλλογή, η επαλήθευση και η επιμέλεια των δεδομένων έγιναν από ανθρώπους.","La interfaz de esta herramienta se ha desarrollado con asistencia de IA. La recopilación, la verificación y la edición de los datos las realizaron personas.","L'interfaccia di questo strumento è stata realizzata con l'assistenza dell'IA. La raccolta, la verifica e l'editing dei dati sono stati svolti da persone.","L'interface de cet outil a été produite avec l'aide de l'IA. La collecte, la vérification et l'édition des données ont été réalisées par des humains.","De front-end van dit instrument is gemaakt met behulp van AI. Gegevensverzameling, verificatie en redactie zijn door mensen uitgevoerd."],
 "sTotalCost":["Total project cost","Συνολικό κόστος έργου","Coste total del proyecto","Costo totale del progetto","Coût total du projet","Totale projectkosten"],
