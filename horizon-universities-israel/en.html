@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="canonical" href="https://data.reportersunited.gr/horizon-universities-israel/nl">
+<link rel="canonical" href="https://data.reportersunited.gr/horizon-universities-israel/en">
 <link rel="alternate" hreflang="en" href="https://data.reportersunited.gr/horizon-universities-israel/en">
 <link rel="alternate" hreflang="el" href="https://data.reportersunited.gr/horizon-universities-israel/el">
 <link rel="alternate" hreflang="es" href="https://data.reportersunited.gr/horizon-universities-israel/es">
@@ -11,8 +11,8 @@
 <link rel="alternate" hreflang="fr" href="https://data.reportersunited.gr/horizon-universities-israel/fr">
 <link rel="alternate" hreflang="nl" href="https://data.reportersunited.gr/horizon-universities-israel/nl">
 <link rel="alternate" hreflang="x-default" href="https://data.reportersunited.gr/horizon-universities-israel/en">
-<meta name="description" content="Horizon-samenwerkingsregister">
-<title>Horizon-samenwerkingsregister</title>
+<meta name="description" content="Horizon collaboration register">
+<title>Horizon collaboration register</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <style>
 :root{
@@ -48,7 +48,7 @@ header.masthead{border-bottom:1px solid var(--rule);background:var(--panel);padd
 .counters{display:flex;gap:26px;padding:7px 18px;border-bottom:1px solid var(--rule-soft);font-family:var(--mono);font-size:11.5px;color:var(--muted);background:var(--panel);flex-wrap:wrap;align-items:center}
 .counters b{color:var(--ink);font-weight:600}
 .body{flex:1;display:flex;min-height:0}
-.site-footer .sep{margin:0 7px;color:var(--rule)}
+.site-footer .sep{margin:0 8px;color:var(--ink70);font-weight:700}
 .site-footer{flex-shrink:0;border-top:1px solid var(--rule);background:var(--panel);
   padding:7px 18px;font-size:11px;line-height:1.45;color:var(--muted)}
 main.stage{flex:1;min-width:0;position:relative}
@@ -313,6 +313,8 @@ tbody tr:hover{background:var(--paper)}
     <span class="sep">·</span>
     <span data-i18n="aiDisclaimer">The front-end of this tool was produced with AI assistance.
       Data collection, verification and editorial work were carried out by people.</span>
+    <span class="sep">·</span>
+    <span data-i18n="credit">Web app created by Spoovio</span>
   </footer>
 </div>
 
@@ -328,7 +330,7 @@ tbody tr:hover{background:var(--paper)}
 const LANGS=[["en","English"],["el","Ελληνικά"],["es","Español"],
              ["it","Italiano"],["fr","Français"],["nl","Nederlands"]];
 const LOCALES=["en-GB","el-GR","es-ES","it-IT","fr-FR","nl-NL"];
-let LANG=5;   // this build opens in Nederlands
+let LANG=0;   // this build opens in English
 
 const STR={
 "title":["Horizon collaboration register","Μητρώο συνεργασιών Horizon","Registro de colaboraciones Horizon","Registro delle collaborazioni Horizon","Registre des collaborations Horizon","Horizon-samenwerkingsregister"],
@@ -409,6 +411,7 @@ const STR={
 "projectsLc":["projects","έργα","proyectos","progetti","projets","projecten"],
 "noteDefence":["Sample record: flagged as holding military or ministry-of-defence contracts.","Δείγμα εγγραφής: επισημαίνεται ότι κατέχει στρατιωτικές συμβάσεις ή συμβάσεις του υπουργείου Άμυνας.","Registro de muestra: señalada por tener contratos militares o del ministerio de Defensa.","Record di esempio: segnalata per contratti militari o del ministero della Difesa.","Enregistrement d'exemple : signalée comme titulaire de contrats militaires ou du ministère de la Défense.","Voorbeeld: aangemerkt als houder van militaire contracten of contracten van het ministerie van Defensie."],
 "noteNone":["Sample record: no defence contracts identified in this dataset.","Δείγμα εγγραφής: δεν εντοπίστηκαν αμυντικές συμβάσεις σε αυτό το σύνολο δεδομένων.","Registro de muestra: no se identificaron contratos de defensa en este conjunto de datos.","Record di esempio: nessun contratto di difesa individuato in questo set di dati.","Enregistrement d'exemple : aucun contrat de défense identifié dans ce jeu de données.","Voorbeeld: geen defensiecontracten vastgesteld in deze dataset."],
+"credit":["Web app created by Spoovio","Η διαδικτυακή εφαρμογή δημιουργήθηκε από τη Spoovio","Aplicación web creada por Spoovio","Applicazione web creata da Spoovio","Application web créée par Spoovio","Webapp gemaakt door Spoovio"],
 "scopeNote":["Data covers all projects signed under Horizon Europe (2021–2027); collection stopped in May 2026.","Τα δεδομένα καλύπτουν όλα τα έργα που υπογράφηκαν στο πλαίσιο του Horizon Europe (2021–2027)· η συλλογή σταμάτησε τον Μάιο του 2026.","Los datos abarcan todos los proyectos firmados en el marco de Horizonte Europa (2021–2027); la recopilación finalizó en mayo de 2026.","I dati coprono tutti i progetti firmati nell'ambito di Orizzonte Europa (2021–2027); la raccolta si è conclusa a maggio 2026.","Les données couvrent tous les projets signés dans le cadre d'Horizon Europe (2021–2027) ; la collecte s'est arrêtée en mai 2026.","De gegevens omvatten alle projecten die zijn ondertekend onder Horizon Europe (2021–2027); de verzameling is gestopt in mei 2026."],
 "aiDisclaimer":["The front-end of this tool was produced with AI assistance. Data collection, verification and editorial work were carried out by people.","Το front-end αυτού του εργαλείου αναπτύχθηκε με τη βοήθεια τεχνητής νοημοσύνης. Η συλλογή, η επαλήθευση και η επιμέλεια των δεδομένων έγιναν από ανθρώπους.","La interfaz de esta herramienta se ha desarrollado con asistencia de IA. La recopilación, la verificación y la edición de los datos las realizaron personas.","L'interfaccia di questo strumento è stata realizzata con l'assistenza dell'IA. La raccolta, la verifica e l'editing dei dati sono stati svolti da persone.","L'interface de cet outil a été produite avec l'aide de l'IA. La collecte, la vérification et l'édition des données ont été réalisées par des humains.","De front-end van dit instrument is gemaakt met behulp van AI. Gegevensverzameling, verificatie en redactie zijn door mensen uitgevoerd."],
 "sTotalCost":["Total project cost","Συνολικό κόστος έργου","Coste total del proyecto","Costo totale del progetto","Coût total du projet","Totale projectkosten"],
