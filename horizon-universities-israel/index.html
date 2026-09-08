@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Horizon collaboration register</title>
+<meta name="description" content="Horizon collaboration register — Horizon Europe projects linking European universities with Israeli entities.">
+  <link rel="canonical" href="https://data.reportersunited.gr/horizon-universities-israel/">
+  <link rel="alternate" hreflang="en" href="https://data.reportersunited.gr/horizon-universities-israel/en">
+  <link rel="alternate" hreflang="el" href="https://data.reportersunited.gr/horizon-universities-israel/el">
+  <link rel="alternate" hreflang="es" href="https://data.reportersunited.gr/horizon-universities-israel/es">
+  <link rel="alternate" hreflang="it" href="https://data.reportersunited.gr/horizon-universities-israel/it">
+  <link rel="alternate" hreflang="fr" href="https://data.reportersunited.gr/horizon-universities-israel/fr">
+  <link rel="alternate" hreflang="nl" href="https://data.reportersunited.gr/horizon-universities-israel/nl">
+  <link rel="alternate" hreflang="x-default" href="https://data.reportersunited.gr/horizon-universities-israel/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Horizon collaboration register">
+<meta property="og:image" content="https://data.reportersunited.gr/horizon-universities-israel/cover.jpg">
+<meta property="og:url" content="https://data.reportersunited.gr/horizon-universities-israel/">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{
+  --ink:#272727; --blue:#567A9F;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;justify-content:center;
+  overflow:hidden}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* overlay sits between the image and the picker so the links stay legible
+   wherever the artwork is light */
+.hero::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(39,39,39,.42) 0%,rgba(39,39,39,.62) 100%)}
+
+.picker{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  padding:24px}
+.picker a{display:block;text-decoration:none;color:#fff;font-size:16px;line-height:1;
+  padding:14px 22px;border:1px solid rgba(255,255,255,.6);border-radius:2px;
+  background:rgba(39,39,39,.34);backdrop-filter:blur(2px);transition:background .15s,border-color .15s}
+.picker a:hover,.picker a:focus-visible{background:#fff;color:var(--ink);border-color:#fff;outline:none}
+.picker a.on{border-color:#fff;box-shadow:inset 0 0 0 1px #fff}
+
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0}
+@media (max-width:560px){
+  .picker{gap:8px;padding:18px}
+  .picker a{font-size:15px;padding:12px 18px}
+}
+</style>
+</head>
+<body>
+<main class="hero">
+  <img src="cover.jpg" srcset="cover-800.jpg 800w, cover.jpg 1600w" sizes="100vw"
+       width="1600" height="900" alt="" fetchpriority="high">
+  <h1 class="sr">Horizon collaboration register</h1>
+  <nav class="picker" id="picker" aria-label="Language">
+      <a href="./en" data-code="en" hreflang="en" lang="en">English</a>
+      <a href="./el" data-code="el" hreflang="el" lang="el">Ελληνικά</a>
+      <a href="./es" data-code="es" hreflang="es" lang="es">Español</a>
+      <a href="./it" data-code="it" hreflang="it" lang="it">Italiano</a>
+      <a href="./fr" data-code="fr" hreflang="fr" lang="fr">Français</a>
+      <a href="./nl" data-code="nl" hreflang="nl" lang="nl">Nederlands</a>
+  </nav>
+</main>
+<script>
+// Mark the reader's own language so the choice is obvious at a glance.
+(function(){
+  var codes=["en","el","es","it","fr","nl"], want=null;
+  try{
+    var pref=navigator.languages||[navigator.language||""];
+    for(var i=0;i<pref.length&&!want;i++){
+      var c=String(pref[i]).slice(0,2).toLowerCase();
+      if(codes.indexOf(c)>-1) want=c;
+    }
+  }catch(e){}
+  if(!want) return;
+  var links=document.querySelectorAll("#picker a");
+  for(var k=0;k<links.length;k++)
+    if(links[k].getAttribute("data-code")===want) links[k].className="on";
+})();
+</script>
+</body>
+</html>
