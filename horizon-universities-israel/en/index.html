@@ -10,9 +10,9 @@
 <link rel="alternate" hreflang="it" href="https://data.reportersunited.gr/horizon-universities-israel/it">
 <link rel="alternate" hreflang="fr" href="https://data.reportersunited.gr/horizon-universities-israel/fr">
 <link rel="alternate" hreflang="nl" href="https://data.reportersunited.gr/horizon-universities-israel/nl">
-<link rel="alternate" hreflang="x-default" href="https://data.reportersunited.gr/horizon-universities-israel/en">
+<link rel="alternate" hreflang="x-default" href="https://data.reportersunited.gr/horizon-universities-israel/">
 <meta name="description" content="Horizon collaboration register">
-<title>Horizon collaboration register</title>
+Horizon collaboration register</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <style>
 :root{
@@ -648,6 +648,7 @@ const ruleEl=(label,right,cls)=>`<div class="rule${cls?" "+cls:""}"><span>${esc(
 /* ── state ───────────────────────────────────────────────────────── */
 const state={
   tab:"clusters",
+  tabChosen:false,          // true once the reader picks a tab themselves
   selection:null,            // {kind:'node'|'edge'|'project', id}
   history:[],                // records opened before this one, for Back
   hover:null,
@@ -1424,7 +1425,9 @@ function renderTable(){
 })();
 
 /* ══ CHROME ══════════════════════════════════════════════════════ */
-function setTab(t){
+function applyDefaultTab(){ setTab(isMobile()?"table":"clusters"); }
+function setTab(t,byUser){
+  if(byUser) state.tabChosen=true;
   state.tab=t;
   $("#clusters").classList.toggle("hidden",t!=="clusters");
   $("#tableview").classList.toggle("hidden",t!=="table");
@@ -1433,7 +1436,7 @@ function setTab(t){
   if(t==="table") renderTable(); else clusters.repack();
 }
 $("#viewtabs").addEventListener("click",e=>{
-  const b=e.target.closest("[data-view]"); if(b) setTab(b.dataset.view);
+  const b=e.target.closest("[data-view]"); if(b) setTab(b.dataset.view,true);
 });
 $("#railtoggle").addEventListener("click",()=>{
   const f=$("#filters"), hidden=f.classList.toggle("hidden");
@@ -1441,7 +1444,10 @@ $("#railtoggle").addEventListener("click",()=>{
   $("#railtoggle").title = hidden ? "Show filters" : "Hide filters";
 });
 /* ── mobile chrome ─────────────────────────────────────────── */
-const isMobile=()=>window.matchMedia("(max-width:860px)").matches;
+const isMobile=()=>{
+  try{ return !!(window.matchMedia && window.matchMedia("(max-width:860px)").matches); }
+  catch(e){ return false; }        // never let a missing API stop the page loading
+};
 function openFilters(v){ document.body.classList.toggle("filters-open",v); }
 $("#openfilters").addEventListener("click",()=>openFilters(true));
 $("#scrim").addEventListener("click",()=>openFilters(false));
@@ -1490,6 +1496,7 @@ function siblingUrl(code){
     if((m=p.match(/^(.*[-_])(en|el|es|it|fr|nl)(\.html?)$/i)))            np=m[1]+code+m[3];
     else if((m=p.match(/^(.*\/)(en|el|es|it|fr|nl)(\/index\.html?)$/i))) np=m[1]+code+m[3];
     else if((m=p.match(/^(.*\/)(en|el|es|it|fr|nl)(\/?)$/i)))            np=m[1]+code+m[3];
+    else if((m=p.match(/^(.*\/)(en|el|es|it|fr|nl)(\.html?)$/i)))         np=m[1]+code+m[3];
     if(np===null) return null;
     u.pathname=np;
     u.searchParams.delete("lang");
@@ -1541,6 +1548,13 @@ if(typeof d3==="undefined"){
   clusters.repack();
   const _u=langFromUrl();
   setLang(_u>=0?_u:LANG);
+  applyDefaultTab();
+  try{
+    const mq=window.matchMedia("(max-width:860px)");
+    const onChange=()=>{ if(!state.tabChosen) applyDefaultTab(); };
+    if(mq.addEventListener) mq.addEventListener("change",onChange);
+    else if(mq.addListener) mq.addListener(onChange);
+  }catch(e){}
 }
 </script>
 </body>
