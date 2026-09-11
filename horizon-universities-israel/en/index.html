@@ -220,11 +220,13 @@ aside.filters>.scroll-box{flex:1 1 0;min-height:140px;overflow-y:auto;padding-ri
   width:44px;height:44px;display:flex;align-items:center;justify-content:center}
 /* a soft wash of the container colour lifts the hand off the bubbles beneath,
    which are dark enough to swallow the outline otherwise */
-.cue::before{content:"";position:absolute;left:50%;top:50%;width:116px;height:116px;
-  margin:-58px 0 0 -58px;border-radius:50%;z-index:0;pointer-events:none;
+.cue::before{content:"";position:absolute;left:50%;top:50%;
+  width:var(--wash,116px);height:var(--wash,116px);
+  margin-left:calc(var(--wash,116px) / -2);margin-top:calc(var(--wash,116px) / -2);
+  border-radius:50%;z-index:0;pointer-events:none;
   background:radial-gradient(circle,
-    rgba(241,238,235,.95) 0%, rgba(241,238,235,.88) 38%,
-    rgba(241,238,235,.55) 62%, rgba(241,238,235,0) 78%)}
+    rgba(241,238,235,.86) 0%, rgba(241,238,235,.74) 52%,
+    rgba(241,238,235,.62) 86%, rgba(241,238,235,.28) 97%, rgba(241,238,235,0) 100%)}
 .cue svg{position:relative;z-index:2;width:34px;height:34px;
   animation:tap 1900ms ease-in-out infinite;
   filter:drop-shadow(0 0 3px rgba(241,238,235,.95))}
@@ -1068,6 +1070,8 @@ const clusters=(function(){
       el.title=t("clHint");
       el.style.left=(transform.x+c.x*transform.k)+"px";
       el.style.top =(transform.y+c.y*transform.k)+"px";
+      // the veil covers the whole group circle, so it has to follow the zoom
+      el.style.setProperty("--wash",(c.r*2*transform.k)+"px");
     });
   }
   function dismissCues(){ cuesDone=true; $("#cues").classList.add("done"); }
