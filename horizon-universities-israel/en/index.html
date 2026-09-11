@@ -33,8 +33,15 @@ button{font-family:inherit}
 
 /* shell */
 #app{height:100%;display:flex;flex-direction:column}
+:root{--rail:236px; --rail-toggle:16px; --record:336px}
+/* The header spans exactly the stage between the two sidebars, so the title
+   and the search line up with the bubbles rather than the window. */
 header.masthead{border-bottom:1px solid var(--rule);background:var(--panel);padding:9px 18px 14px}
-.mast-top{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+@media (min-width:861px){
+  header.masthead{padding-left:calc(var(--rail) + var(--rail-toggle));padding-right:var(--record)}
+  body.rail-collapsed header.masthead{padding-left:var(--rail-toggle)}
+}
+.mast-top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
 @media (min-width:861px){
   .mast-top .seg{margin-left:auto}
 }
@@ -43,15 +50,9 @@ header.masthead{border-bottom:1px solid var(--rule);background:var(--panel);padd
 .counters{display:flex;gap:26px;padding:7px 18px;border-bottom:1px solid var(--rule-soft);font-family:var(--mono);font-size:11.5px;color:var(--muted);background:var(--panel);flex-wrap:wrap;align-items:center}
 .counters b{color:var(--ink);font-weight:600}
 .body{flex:1;display:flex;min-height:0}
-.intro{flex-shrink:0;background:transparent;padding:0}
-.intro-head{display:flex;align-items:baseline;gap:14px}
-.intro-title{font-family:var(--serif);font-weight:400;font-size:22px;line-height:1.2;margin:0}
-.intro-toggle{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--link);
-  font-family:var(--sans);font-size:12px;white-space:nowrap;padding:2px 0}
-.intro-toggle .chev{display:inline-block;transition:transform .15s}
-.intro.closed .intro-toggle .chev{transform:rotate(-90deg)}
-.intro-text{margin:7px 0 0;font-size:12.5px;line-height:1.55;color:var(--ink70);max-width:92ch}
-.intro.closed .intro-text{display:none}
+.intro-title{font-family:var(--serif);font-weight:400;font-size:20px;line-height:1.2;margin:0;
+  white-space:nowrap;flex-shrink:0}
+.intro-text{margin:0;font-size:12.5px;line-height:1.45;color:var(--ink70);flex:1 1 280px;min-width:0}
 #modal{position:fixed;inset:0;z-index:150;background:rgba(39,39,39,.45);
   display:flex;align-items:center;justify-content:center;padding:20px}
 #modal.hidden{display:none}
@@ -89,26 +90,35 @@ header.masthead{border-bottom:1px solid var(--rule);background:var(--panel);padd
   padding:10px 0 12px;overflow:hidden}
 .partners-label{font-family:var(--mono);font-size:10px;color:var(--muted);padding:0 18px 8px;
   letter-spacing:.04em;text-transform:uppercase}
-.partners-track{display:flex;width:max-content;animation:marquee 46s linear infinite}
-.partners:hover .partners-track{animation-play-state:paused}
-.partners-run{display:flex;align-items:center;gap:46px;padding-right:46px}
+/* All nine fit on a laptop or tablet, so they sit still; only phones, where
+   they cannot fit, get the loop. */
+.partners-track{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;
+  gap:26px 40px;padding:0 18px}
+.partners-track .partners-run:last-child{display:none}
+.partners-run{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:26px 40px}
 .plogo{display:flex;align-items:center;height:30px;opacity:.62;transition:opacity .15s}
 .plogo:hover{opacity:1}
 .plogo svg{height:100%;width:auto;max-width:170px;display:block}
 @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (max-width:860px){
+  .partners-track{flex-wrap:nowrap;justify-content:flex-start;width:max-content;gap:0;padding:0;
+    animation:marquee 32s linear infinite}
+  .partners-track .partners-run:last-child{display:flex}
+  .partners-run{flex-wrap:nowrap;gap:34px;padding-right:34px}
+  .partners:hover .partners-track{animation-play-state:paused}
+}
 @media (prefers-reduced-motion:reduce){
-  .partners-track{animation:none;flex-wrap:wrap;width:auto;padding:0 18px}
-  .partners-run:last-child{display:none}
+  .partners-track{animation:none}
 }
 .site-footer{flex-shrink:0;border-top:1px solid var(--rule);background:var(--panel);
   padding:7px 18px;font-size:11px;line-height:1.45;color:var(--muted)}
 main.stage{flex:1;min-width:0;position:relative}
-aside.filters{width:236px;flex-shrink:0;border-right:1px solid var(--rule);background:var(--panel);
+aside.filters{width:var(--rail);flex-shrink:0;border-right:1px solid var(--rule);background:var(--panel);
   padding:2px 16px 14px;display:flex;flex-direction:column;overflow-y:auto;
   -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 aside.filters>*{flex-shrink:0}
-aside.record{width:336px;flex-shrink:0;border-left:1px solid var(--rule);background:var(--panel);overflow-y:auto}
-.rail-toggle{width:16px;flex-shrink:0;border:none;border-right:1px solid var(--rule);background:var(--panel);cursor:pointer;color:var(--muted);font-size:10px;padding:0}
+aside.record{width:var(--record);flex-shrink:0;border-left:1px solid var(--rule);background:var(--panel);overflow-y:auto}
+.rail-toggle{width:var(--rail-toggle);flex-shrink:0;border:none;border-right:1px solid var(--rule);background:var(--panel);cursor:pointer;color:var(--muted);font-size:10px;padding:0}
 .hidden{display:none !important}
 
 /* controls */
@@ -263,6 +273,8 @@ tbody tr:hover{background:var(--paper)}
   .mobile-only{display:inline-block}
   header.masthead{padding:8px 12px 10px}
   .mast-top{gap:10px;margin-bottom:8px}
+  .intro-title{font-size:16px;white-space:normal}
+  .intro-text{flex-basis:100%;font-size:12px}
   .wordmark{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #lang{max-width:104px}
   .mast-top .seg{margin-left:auto}
@@ -345,21 +357,15 @@ tbody tr:hover{background:var(--paper)}
   <header class="masthead">
     <div class="mast-top">
       <button class="btn mobile-only" id="openfilters" data-i18n="filters">Filters</button>
+      <h1 class="intro-title" data-i18n="title">Horizon collaboration register</h1>
+      <p class="intro-text" data-i18n="intro"></p>
       <div class="seg" id="viewtabs">
         <button data-view="clusters" class="on" data-i18n="tabClusters">Clusters</button>
         <button data-view="table" data-i18n="tabTable">Table</button>
       </div>
       <select id="lang" aria-label="Language"></select>
     </div>
-    <section class="intro" id="intro">
-      <div class="intro-head">
-        <h1 class="intro-title" data-i18n="title">Horizon collaboration register</h1>
-        <button class="intro-toggle" id="introToggle" aria-expanded="true" aria-controls="introText">
-          <span data-i18n="about">About this data</span> <span class="chev" aria-hidden="true">▾</span>
-        </button>
-      </div>
-      <p class="intro-text" id="introText" data-i18n="intro"></p>
-    </section>
+
     <div class="searchwrap" id="searchwrap">
       <svg width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
         <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 L14.5 14.5" stroke-linecap="round"/>
@@ -1682,18 +1688,10 @@ $("#viewtabs").addEventListener("click",e=>{
 });
 $("#railtoggle").addEventListener("click",()=>{
   const f=$("#filters"), hidden=f.classList.toggle("hidden");
+  document.body.classList.toggle("rail-collapsed",hidden);   // keep the header aligned
   $("#railtoggle").textContent = hidden ? "›" : "‹";
   $("#railtoggle").title = hidden ? "Show filters" : "Hide filters";
 });
-/* The description is open on a wide screen and folded away on a phone,
-   where vertical space is the scarce resource. */
-(function(){
-  const box=$("#intro"), btn=$("#introToggle");
-  const set=open=>{ box.classList.toggle("closed",!open); btn.setAttribute("aria-expanded",String(open)); };
-  set(!window.matchMedia || !window.matchMedia("(max-width:860px)").matches);
-  btn.addEventListener("click",()=>set(box.classList.contains("closed")));
-})();
-
 /* ── mobile chrome ─────────────────────────────────────────── */
 const isMobile=()=>{
   try{ return !!(window.matchMedia && window.matchMedia("(max-width:860px)").matches); }
