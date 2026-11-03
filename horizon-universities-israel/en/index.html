@@ -2199,5 +2199,27 @@ function boot(){
   }catch(e){}
 }
 </script>
+<script>
+/* greek-caps */
+/* Greek capitals carry no accent (ΕΛΛΗΝΙΚΑ, not ΕΛΛΗΝΙΚΆ). Some browsers drop it when CSS uppercases
+   lang="el" text and some keep it, and a Greek label capitalised inside a page in another language keeps it
+   everywhere. So the text the CSS capitalises is written in capitals explicitly. Only Greek text is touched. */
+(function(){
+  var GREEK=/[\u0370-\u03FF\u1F00-\u1FFF]/;
+  function up(s){ return s.normalize("NFD").replace(/\u0301/g,"").normalize("NFC").toUpperCase(); }
+  function fix(){
+    var sel=document.documentElement.lang==="el" ? ".mini,.pub-outlet span,.v2nav a,#lang option" : "#lang option";
+    var list=document.querySelectorAll(sel);
+    for(var i=0;i<list.length;i++){
+      var w=document.createTreeWalker(list[i],NodeFilter.SHOW_TEXT,null), n, v, u;
+      while((n=w.nextNode())){ v=n.nodeValue; if(GREEK.test(v)){ u=up(v); if(u!==v) n.nodeValue=u; } }
+    }
+  }
+  var pending=false;
+  function soon(){ if(pending) return; pending=true; requestAnimationFrame(function(){ pending=false; fix(); }); }
+  new MutationObserver(soon).observe(document.body,{childList:true,subtree:true,characterData:true});
+  fix();
+})();
+</script>
 </body>
 </html>
