@@ -616,6 +616,7 @@ button.statjump:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
       <p data-i18n="scopeNote"></p>
       <p data-i18n="aiDisclaimer"></p>
       <p data-i18n="credit"></p>
+      <p data-i18n="contact"></p>
     </div>
   </div></footer>
 <script>
@@ -769,6 +770,7 @@ const STR={
 "iccSource":["Read the International Criminal Court decision", "Δες την απόφαση του Διεθνούς Ποινικού Δικαστηρίου", "Leer la decisión de la Corte Penal Internacional", "Leggi la decisione della Corte penale internazionale", "Lire la décision de la Cour pénale internationale"],
 "cDescription":["Description", "Περιγραφή", "Descripción", "Descrizione", "Description"],
 "postICCShort":["After ICC warrant", "Μετά το ένταλμα ΔΠΔ", "Tras la orden de la CPI»", "Dopo mandato CPI", "Après mandat CPI"],
+"contact":["Contact: data@reportersunited.gr", "Επικοινωνία: data@reportersunited.gr", "Contacto: data@reportersunited.gr", "Contatti: data@reportersunited.gr", "Contact : data@reportersunited.gr"],
 "postICJ":["Signed after ICJ ruling", "Μετά την απόφαση του ICJ (Χάγη)", "Firmado tras las medidas provisionales de la CIJ", "Firmato dopo le misure provvisorie della CIG", "Signé après les mesures conservatoires de la CIJ"],
 "postICJShort":["After ICJ ruling", "Μετά την απόφαση ICJ (Χάγη)", "Tras medidas CIJ", "Dopo misure CIG", "Après mesures CIJ"],
 "icjDate":["26 January 2024", "26 Ιανουαρίου 2024", "26 de enero de 2024", "26 gennaio 2024", "26 janvier 2024"],
@@ -2259,6 +2261,10 @@ function applyStatic(){
   // footer credit: the studio name links to its site, in every language
   document.querySelectorAll('[data-i18n="credit"]').forEach(el=>{
     el.innerHTML=esc(el.textContent).replace("Spoovio",'<a href="https://spoovio.com/" target="_blank" rel="noopener">Spoovio</a>');
+  });
+  // footer contact: the address opens an email
+  document.querySelectorAll('[data-i18n="contact"]').forEach(el=>{
+    el.innerHTML=esc(el.textContent).replace("data@reportersunited.gr",'<a href="mailto:data@reportersunited.gr">data@reportersunited.gr</a>');
   });
 }
 function setLang(i){
