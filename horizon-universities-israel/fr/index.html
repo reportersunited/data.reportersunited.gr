@@ -508,6 +508,10 @@ button.statjump:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 
 /* footer credit link */
 .site-footer p a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+
+/* evidence pop-up: label when the text is only available in English */
+.modal-note{display:inline-block;margin:0 0 14px;padding:3px 8px;border:1px solid currentColor;border-radius:2px;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);opacity:.9}
+.modal-note[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -516,6 +520,7 @@ button.statjump:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     <button class="modal-close" id="modalClose" aria-label="Close">×</button>
     <div class="modal-kicker" id="modalKicker"></div>
     <h2 id="modalTitle"></h2>
+    <div class="modal-note" id="modalNote" hidden></div>
     <div class="modal-body" id="modalBody"></div>
   </div>
 </div>
@@ -728,7 +733,7 @@ const STR={
 "pubPending":["Link to be added", "Εκκρεμεί λινκ", "Enlace pendiente", "Link da aggiungere", "Lien à venir"],
 "icjSource":["Read the International Court of Justice order", "Δείτε την απόφαση του Διεθνούς Δικαστηρίου της Χάγης", "Leer la sentencia de la Corte Internacional de Justicia", "Leggi l'ordinanza della Corte internazionale di giustizia", "Lire l'ordonnance de la Cour internationale de Justice"],
 "whyDefence":["Why is this flagged?", "Τεκμήρια στρατιωτικών συνδέσεων", "¿Por qué está marcada?", "Perché è segnalato?", "Pourquoi ce signalement ?"],
-"whyDefenceTitle":["Why this entity is defence-linked", "Συνδέσεις με τον IDF και τη βιομηχανία όπλων", "Por qué esta entidad está vinculada a defensa", "Perché questo ente è legato alla difesa", "Pourquoi cette entité est liée à la défense"],
+"whyDefenceTitle":["Why this entity is defence-linked", "Συνδέσεις με τον IDF και τη βιομηχανία όπλων", "Why this entity is defence-linked", "Why this entity is defence-linked", "Why this entity is defence-linked"],
 "partners":["Published with", "Δημοσιεύεται με", "Publicado con", "Pubblicato con", "Publié avec"],
 "gateTitle":["This page is not public yet", "Η σελίδα δεν είναι ακόμη δημόσια", "Esta página aún no es pública", "Questa pagina non è ancora pubblica", "Cette page n'est pas encore publique"],
 "gateHint":["Enter the password to open the register.", "Βάλε τον κωδικό σου για να ανοίξεις το μητρώο.", "Introduzca la contraseña para abrir el registro.", "Inserisci la password per aprire il registro.", "Saisissez le mot de passe pour ouvrir le registre."],
@@ -771,6 +776,7 @@ const STR={
 "cDescription":["Description", "Περιγραφή", "Descripción", "Descrizione", "Description"],
 "postICCShort":["After ICC warrant", "Μετά το ένταλμα ΔΠΔ", "Tras la orden de la CPI»", "Dopo mandato CPI", "Après mandat CPI"],
 "contact":["Contact: data@reportersunited.gr", "Επικοινωνία: data@reportersunited.gr", "Contacto: data@reportersunited.gr", "Contatti: data@reportersunited.gr", "Contact : data@reportersunited.gr"],
+"evidenceEnOnly":["Only in English", "Μόνο στα αγγλικά", "Solo en inglés", "Solo in inglese", "Uniquement en anglais"],
 "postICJ":["Signed after ICJ ruling", "Μετά την απόφαση του ICJ (Χάγη)", "Firmado tras las medidas provisionales de la CIJ", "Firmato dopo le misure provvisorie della CIG", "Signé après les mesures conservatoires de la CIJ"],
 "postICJShort":["After ICJ ruling", "Μετά την απόφαση ICJ (Χάγη)", "Tras medidas CIJ", "Dopo misure CIG", "Après mesures CIJ"],
 "icjDate":["26 January 2024", "26 Ιανουαρίου 2024", "26 de enero de 2024", "26 gennaio 2024", "26 janvier 2024"],
@@ -1781,7 +1787,12 @@ function openWhy(id){
   const e=G.eById.get(id); if(!e) return;
   $("#modalKicker").textContent=e.name;
   $("#modalTitle").textContent=t("whyDefenceTitle");
-  $("#modalBody").innerHTML=richText(LANG===1?(e.evidenceEl||e.evidenceEn):e.evidenceEn);
+  const own=LANG===1&&e.evidenceEl;               // Greek has its own evidence texts; other languages show the English
+  $("#modalBody").innerHTML=richText(own?e.evidenceEl:e.evidenceEn);
+  const english=!own&&LANG!==0;                   // English text on a non-English page: say so, and mark it for screen readers
+  $("#modalNote").textContent=english?t("evidenceEnOnly"):"";
+  $("#modalNote").hidden=!english;
+  ["#modalTitle","#modalBody"].forEach(s=>english?$(s).setAttribute("lang","en"):$(s).removeAttribute("lang"));
   $("#modal").classList.remove("hidden");
   $("#modalClose").focus();
 }
