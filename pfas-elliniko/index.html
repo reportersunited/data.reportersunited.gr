@@ -17,6 +17,7 @@ header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-item
 .logo:focus-visible{outline:3px solid var(--red);outline-offset:4px}
 .kick{font-weight:600;color:var(--red);font-size:14px;margin:0 0 6px}
 h1{font:700 clamp(20px,2.4vw,26px)/1.2 Arial,Helvetica,sans-serif;margin:0;text-wrap:balance}
+.lbl{display:inline-block;margin:0 0 10px;padding:3px 9px;font-size:13px;font-weight:700;color:#fff;background:#c4473d;border-radius:2px}
 .dek{margin:6px 0 0;max-width:62ch;color:var(--mute);font-size:17px;line-height:1.35}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:16px 0 6px;border-bottom:1px solid var(--line)}
 .stat{padding:4px 12px 10px 0}.stat+.stat{padding-left:12px;border-left:1px solid var(--line)}
@@ -112,6 +113,7 @@ footer p{margin:4px 0}
 <div class="wrap">
 <header>
  <div>
+  <p class="lbl">Μετρήσεις Νοεμβρίου 2025</p>
   <h1>Αναλύσεις νερού από 5 πηγάδια του Κάτω Ελληνικού και 5 πηγάδια της Γλυφάδας (Δικηγορικά)</h1>
   <p class="dek">Τα 4 πιο προβληματικά PFAS σε πολύ μεγάλες συγκεντρώσεις</p>
  </div>
@@ -232,7 +234,7 @@ footer p{margin:4px 0}
 </div>
 <div class="panel" id="p4" role="tabpanel" aria-labelledby="t4" hidden>
  <div class="scroll"><table id="tbl"></table></div>
- <p class="hint">● Ουσίες που μετρούν στο άθροισμα των 4 PFAS. &lt;LOD: κάτω από το όριο ανίχνευσης · &lt;LOQ: κάτω από το όριο ποσοτικοποίησης. Το χρώμα δείχνει την ένταση της συγκέντρωσης.</p>
+ <p class="hint"><span style="color:var(--red)">●</span> Ουσίες που μετρούν στο άθροισμα των 4 PFAS. &lt;LOD: κάτω από το όριο ανίχνευσης · &lt;LOQ: κάτω από το όριο ποσοτικοποίησης. Το χρώμα δείχνει την ένταση της συγκέντρωσης.</p>
 </div>
 
 <footer>
