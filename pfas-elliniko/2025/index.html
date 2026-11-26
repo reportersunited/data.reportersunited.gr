@@ -31,6 +31,8 @@ h1{font:700 clamp(20px,2.4vw,26px)/1.2 Arial,Helvetica,sans-serif;margin:0;text-
 .stat span{font-size:13px;line-height:1.3;display:block;color:var(--mute)}
 .tabs{display:flex;gap:20px;margin:22px 0 14px;border-bottom:1px solid var(--line)}
 .tab{font:400 15px Arial,Helvetica,sans-serif;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;color:var(--mute);padding:0 2px;min-height:42px;cursor:pointer}
+.tab .arr{color:#c4473d}
+.tab[aria-selected=true] .arr{display:none}
 .tab[aria-selected=true]{color:var(--ink);border-bottom-color:var(--ink)}
 .panel[hidden],#foot[hidden],#leg[hidden]{display:none}
 .tabs{overflow-x:auto;scrollbar-width:none}.tab{flex:none;white-space:nowrap}
@@ -221,7 +223,7 @@ footer p{margin:4px 0}
 </header>
 
 <div class="stats">
- <div class="stat"><b>4,4 ng/L</b><span>όριο για το άθροισμα των 4 PFAS</span></div>
+ <div class="stat"><b>4,4 ng/L</b><span>όριο για το άθροισμα των 4 PFAS στα υπόγεια ύδατα με βάση την ευρωπαϊκή οδηγία για τα νερά</span></div>
  <div class="stat r"><b>10 / 10</b><span>σημεία δειγματοληψίας πάνω από το όριο</span></div>
  <div class="stat r"><b id="maxx"></b><span>η υψηλότερη υπέρβαση (Σημείο 4, Κάτω Ελληνικό)</span></div>
  <div class="stat r"><b id="minx"></b><span>ακόμη και η χαμηλότερη τιμή (Σημείο 10) ξεπερνά το όριο</span></div>
@@ -229,7 +231,7 @@ footer p{margin:4px 0}
 
 <div class="tabs" role="tablist">
  <button type="button" class="tab" role="tab" id="t3" aria-selected="true" aria-controls="p3">Φορές πάνω από το όριο</button>
- <button type="button" class="tab" role="tab" id="t4" aria-selected="false" aria-controls="p4">Όλες οι ουσίες PFAS</button>
+ <button type="button" class="tab" role="tab" id="t4" aria-selected="false" aria-controls="p4">Δείτε όλες τις ουσίες PFAS<span class="arr" aria-hidden="true"> →</span></button>
 </div>
 <div class="panel" id="p3" role="tabpanel" aria-labelledby="t3">
  <p class="intro">Μέσος όρος του αθροίσματος των 4 PFAS ανά περιοχή. Κάθε κουκκίδα αντιστοιχεί σε 4,4 ng/L, όσο είναι το όριο: νερό εντός ορίου θα είχε μόνο την πρώτη, μαύρη κουκκίδα.</p>
@@ -239,12 +241,13 @@ footer p{margin:4px 0}
 </div>
 <div class="panel" id="p4" role="tabpanel" aria-labelledby="t4" hidden>
  <div class="scroll"><table id="tbl"></table></div>
- <p class="hint"><span style="color:var(--red)">●</span> Ουσίες που μετρούν στο άθροισμα των 4 PFAS. &lt;LOD: κάτω από το όριο ανίχνευσης · &lt;LOQ: κάτω από το όριο ποσοτικοποίησης. Το χρώμα δείχνει την ένταση της συγκέντρωσης.</p>
+ <p class="hint"><span style="color:var(--red)">●</span> Ουσίες που μετρούν στο άθροισμα των 4 PFAS. &lt;LOD: κάτω από το όριο ανίχνευσης · Η ουσία δεν ανιχνεύεται καθόλου. &lt;LOQ: κάτω από το όριο ποσοτικοποίησης. Η ουσία ανιχνεύεται αλλά σε συγκεντρώσεις μικρότερες από αυτές που μπορούν να προσδιοριστούν επακριβώς. Το χρώμα δείχνει την ένταση της συγκέντρωσης.</p>
 </div>
 
 <footer>
- <p><strong>Πηγή:</strong> Μετρήσεις υπόγειων υδάτων Reporters United σε συνεργασία με το Πανεπιστήμιο Αιγαίου, σε 10 σημεία γύρω από το εργοτάξιο του Ελληνικού.</p>
+ <p><strong>Πηγή:</strong> Μετρήσεις υπόγειων υδάτων Reporters United σε συνεργασία με το Εργαστήριο Ποιότητας Υδάτων και Αέρα του Τμήματος Περιβάλλοντος του Πανεπιστημίου Αιγαίου · Νοέμβριος - Δεκέμβριος 2025, Νοέμβριος 2026</p>
  <p>Άθροισμα 4 PFAS: PFHxS, PFOA, PFNA, PFOS, όπως αναφέρονται στην Οδηγία 2026/805. Τιμές κάτω από LOD/LOQ δεν προσμετρώνται.</p>
+ <p>Οπτικοποίηση δεδομένων: <a href="https://spoovio.com" target="_blank" rel="noopener" style="color:inherit">Spoovio</a></p>
 </footer>
 </div>
 
@@ -307,5 +310,6 @@ const tabs=[3,4].map(n=>[document.getElementById('t'+n),document.getElementById(
 tabs.forEach(([tb],n)=>tb.addEventListener('click',()=>{tabs.forEach(([o,p])=>{const on=o===tb;o.setAttribute('aria-selected',on);p.hidden=!on});if(n===0)drawWaf()}));
 }
 </script>
+<script>{const id=location.pathname;const post=()=>{try{parent.postMessage({pfasHeight:Math.ceil(document.documentElement.scrollHeight)},'*')}catch(e){}};const pr=new ResizeObserver(post);pr.observe(document.body);addEventListener('load',post);}</script>
 </body>
 </html>
